@@ -217,7 +217,7 @@ pub use crate::error::Error;
 // The function MUST NOT ever write uninitialized bytes into `dest`,
 // regardless of what value it returns.
 cfg_if! {
-    if #[cfg(feature = "custom")] {
+    if #[cfg(feature = "force_custom")] {
         use custom as imp;
     }else if #[cfg(any(target_os = "haiku", target_os = "redox", target_os = "nto", target_os = "aix"))] {
         mod util_libc;
@@ -286,7 +286,9 @@ cfg_if! {
     } else if #[cfg(target_os = "hurd")] {
         mod util_libc;
         #[path = "hurd.rs"] mod imp;
-    }  else if #[cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"),
+    } else if #[cfg(feature = "custom")] {
+        use custom as imp;
+    } else if #[cfg(all(any(target_arch = "wasm32", target_arch = "wasm64"),
                         target_os = "unknown"))] {
         compile_error!("the wasm*-unknown-unknown targets are not supported by \
                         default, you may need to enable the \"js\" feature. \
